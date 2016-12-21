@@ -1,0 +1,14 @@
+# iPhone 6
+iphone6:
+  "Model": "iPhone 6"
+  "Make": "Apple"
+# Galaxy S5
+galaxy_s5:
+  "Make": "SAMSUNG"
+  "Model": "SAMSUNG-SM-G900A"
+galaxy_s5_video:
+  "Image Size": "1920x1080"
+  "File Type": "MP4"
+galaxy_s7:
+  "Make": "SAMSUNG"
+  "Model": "SAMSUNG-SM-G930A"
