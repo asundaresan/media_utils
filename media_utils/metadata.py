@@ -1,4 +1,4 @@
-# Get information about the media 
+# File to get metadata from files
 # 
 
 import os
@@ -7,83 +7,43 @@ import subprocess
 import json 
 import yaml
 
-
-def run_command( command ):
-  p = subprocess.Popen( command,
-      stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT )
-  return iter(p.stdout.readline, b'')
-
-
 def get_video_metadata( filename, verbose = 0 ):
   """ Get meta-data by parsing exiftool (from libimage-exiftool-perl)
   """
-  if verbose > 2:
-    print( "processing %s" % filename )
-  cmd = "exiftool %s" % filename
-
   exif = {}
-  for line in run_command( cmd.split() ):
-    if ":" in line:
-      data = line.split( ":" )
+  if verbose > 2:
+    print( "Processing %s" % filename )
+
+  cmd = "exiftool %s" % filename
+  output = str( subprocess.check_output( cmd.split() ).decode( "ascii" ) )
+  for line in output.splitlines():
+    data = line.split( ":" )
+    if len( data ) == 2:
       key = data[0].strip()
       val = data[1].strip()
       exif.update( { key: val } )
+      if verbose > 2:
+        print( "  %s:%s" % ( key, val ) )
   return exif
 
 
 
 def translate( exif, keymap ):
-  for k, v in keymap.iteritems():
-    #print( "  translating %s -> %s: %s" % ( k, v, k in exif.keys() ) )
+  for k, v in keymap.items():
     if k in exif.keys() and v not in exif.keys():
       exif[v] = exif[k]
-      #print( "    %s: %s" % ( v, exif[v] ) )
   return exif
 
 
 
-def get_metadata( filename, koi, verbose = 0, video_extensions = ["MOV"], image_extensions = ["JPG", "JPEG"] ):
+def get_metadata( filename, koi, verbose = 0 ):
   exif = get_video_metadata( filename, verbose = verbose )
   keymap = {"Camera Model Name": "Model"}
   exif2 = translate( exif, keymap )
-  exif3 = { k:v for k,v in exif2.iteritems() if k in koi }
+  exif3 = { k:v for k,v in exif2.items() if k in koi }
   if verbose > 2:
-    print( "\n".join( "  %s:%s" % (k,v) for k, v in exif3.iteritems() ) )
+    print( "\n".join( "  %s:%s" % (k,v) for k, v in exif3.items() ) )
   return exif3
-
-
-
-#def get_metadata( filename, koi, verbose = 0, video_extensions = ["MOV"], image_extensions = ["JPG", "JPEG"] ):
-#  name, extension = os.path.splitext( filename )
-#  filetype = extension.upper().lstrip( "." )
-#  exif = {}
-#  if filetype in video_extensions:
-#    exif = get_video_metadata( filename, koi, verbose = verbose )
-#  elif filetype in image_extensions:
-#    exif = get_image_info( filename, koi, verbose = verbose )
-#  
-#  exif.update( {"Type": filetype } )
-#  return exif
-#
-#
-#def get_image_info( filename, koi, verbose = 0 ):
-#  try:
-#    im = ImageFile.Image.open( filename )
-#  except:
-#    return {}
-#  try:
-#    exif = { ExifTags.TAGS[k]: v for k, v in im._getexif().items() if k in ExifTags.TAGS }
-#  except:
-#    exif = {}
-#  size = list( im.size )
-#  size.sort
-#  exif["Size"] = "x".join( "%d" % x for x in size )
-#  exif.update( { k:"" for k in koi if k not in exif.keys() } )
-#  if len( koi ) > 0:
-#    exif2 = { k:exif[k] for k in koi if k in exif.keys() }
-#    return exif2
-#  return exif
 
 
 
@@ -153,7 +113,7 @@ def process_folder( root_folder, select = [], move = False, move_complement = Fa
 
   ns_files = 0
   ns_categories = 0
-  for key, val in db.iteritems():
+  for key, val in db.items():
     exif = val["exif"]
     files = val["files"]
     selected = is_match( select, exif )
@@ -179,31 +139,3 @@ def process_folder( root_folder, select = [], move = False, move_complement = Fa
 
   print( "  Other (%d categories, %d files)\n--" % ( ns_categories, ns_files ) )
 
-import sys
-import argparse
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument( "folder", help="Search folder" )
-    parser.add_argument( "--repickle", "-R", action="store_true", help="Force rewrite of pickle files" )
-    parser.add_argument( "--verbose", "-v", action="count", help="Verbosity level" )
-    parser.add_argument( "--source", "-s", default = "sources.yaml", help="Move selected files to folder" )
-    parser.add_argument( "--move", "-m", action="store_true", help="Move selected files to folder" )
-    parser.add_argument( "--move-complement", "-c", action="store_true", help="Move complement of selected files to folder" )
-    args = parser.parse_args()
-    print( "Searching for files in: %s" % args.folder )
-    
-    select = {}
-    try:
-      with open( args.source, "r" ) as f:
-        select = yaml.load( f )
-    except:
-      print( "Failed to load sources from %s: %s" % ( args.source ) )
-    else:
-      print( "Loaded sources from %s (%d types)" % ( args.source, len( select ) ) )
-      if args.verbose > 0:
-        print( "\n".join( "- %s: %s" % ( k, json.dumps( v ) ) for k, v in select.iteritems() ) )
-
-
-    process_folder( args.folder, select = select.values(), move = args.move,
-        move_complement = args.move_complement, verbose = args.verbose )

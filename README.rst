@@ -17,6 +17,10 @@ To install the package::
 
   pip install -e . --user
 
+or for Python 3::
+
+  pip3 install -e . --user
+
 Usage
 -----
 
