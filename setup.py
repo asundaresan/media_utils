@@ -11,6 +11,7 @@ setup(name='media_utils',
       license='GPLv3',
       packages=['media_utils'],
       scripts=[
+        "bin/get_metadata.py",
         "bin/set_time.py",
         ],
       zip_safe=False,

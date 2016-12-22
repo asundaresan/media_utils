@@ -7,42 +7,13 @@ import subprocess
 import json 
 import yaml
 
+
 def run_command( command ):
   p = subprocess.Popen( command,
       stdout=subprocess.PIPE,
       stderr=subprocess.STDOUT )
   return iter(p.stdout.readline, b'')
 
-
-#def get_video_info_ffmpeg( filename, keys = ["Model", "Make", "Size"], verbose = 0 ):
-#  if verbose > 0:
-#    print( "processing %s" % filename )
-#  outputfile = "/tmp/metadata.txt"
-#  if os.path.exists( outputfile ):
-#    os.remove( outputfile )
-#  cmd = "ffmpeg -i %s -f ffmetadata %s" % ( filename, outputfile )
-#  exif = {}
-#  for line in run_command( cmd.split() ):
-#    if ":" in line:
-#      v = line.split( ":" )
-#      key = v[0].strip()
-#      val = v[1].strip()
-#      if key.startswith( "Stream #0" ) and val.startswith( "0(und)" ):
-#        if len( v ) == 4: 
-#          v2 = v[3].split( ", " )
-#          if len( v2 ) >= 4:
-#            key = "size-eng" 
-#            val = v2[3]
-#
-#      for k in keys:
-#        if key.startswith( k.lower() ) and key.endswith( "-eng" ):
-#          exif[k] = val
-#          if verbose > 1:
-#            print( "%s:%s (%s:%s)" % ( key, val, v[0].strip(), v[1].strip() ) )
-#  if verbose > 0:
-#    print( "  exif: %s" % exif )
-#  return exif
-#
 
 def get_video_metadata( filename, verbose = 0 ):
   """ Get meta-data by parsing exiftool (from libimage-exiftool-perl)

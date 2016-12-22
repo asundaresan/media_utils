@@ -1,3 +1,4 @@
+data = """
 # iPhone 
 iphone_image:
   "Image Size": "2048x1536"
@@ -70,4 +71,5 @@ galaxy_s5_image_front:
   "Make": "SAMSUNG"
   "Model": "SAMSUNG-SM-G900A"
   "File Type": "JPEG"
+"""
 
