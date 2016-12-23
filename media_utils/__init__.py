@@ -1,1 +1,2 @@
-from . import metadata, conf
+from . import metadata
+from . import conf

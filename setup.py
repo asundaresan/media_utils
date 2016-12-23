@@ -12,7 +12,7 @@ setup(name='media_utils',
       packages=['media_utils'],
       scripts=[
         "bin/get_metadata.py",
-        "bin/set_time.py",
+        "bin/set_datetime.py",
         ],
       zip_safe=False,
       install_requires = [

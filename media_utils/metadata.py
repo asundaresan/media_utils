@@ -1,30 +1,70 @@
 # File to get metadata from files
-# 
 
 import os
 import pickle
 import subprocess
 import json 
 import yaml
+from datetime import datetime
+from .exiftool import exiftool, exiftool_set, exiftool_get
 
-def get_video_metadata( filename, verbose = 0 ):
-  """ Get meta-data by parsing exiftool (from libimage-exiftool-perl)
+
+def get_datetime_tags( ):
+  return [ "createdate", "modifydate", "trackcreatedate", "trackmodifydate", "mediacreatedate", "mediamodifydate" ]
+
+
+
+def strptime( datetimestr ):
+  """ Get datetime from EXIF date value
   """
-  exif = {}
-  if verbose > 2:
-    print( "Processing %s" % filename )
+  try:
+    dt = datetime.strptime( datetimestr, "%Y:%m:%d %H:%M:%S" )
+  except ValueError as e:
+    raise ValueError( e )
+  return dt
 
-  cmd = "exiftool %s" % filename
-  output = str( subprocess.check_output( cmd.split() ).decode( "ascii" ) )
-  for line in output.splitlines():
-    data = line.split( ":" )
-    if len( data ) == 2:
-      key = data[0].strip()
-      val = data[1].strip()
-      exif.update( { key: val } )
-      if verbose > 2:
-        print( "  %s:%s" % ( key, val ) )
-  return exif
+
+
+def get_datetime( filename, verbose = 0 ):
+  tags = get_datetime_tags()
+  tag_value_dict = {}
+  for tag in tags:
+    exif = exiftool_get( filename, [tag] )
+    if len( exif.keys() ) == 1:
+      for key, val in exif.items():
+        try:
+          dt = strptime( val )
+          tag_value_dict.update( {tag:dt} )
+        except ValueError as e:
+          print( "Error reading %s: %s" % ( filename, e ) )
+    else:
+      print( "Warning! %s did not have tag %s" % ( filename, tag ) )
+  return tag_value_dict
+
+
+
+def set_datetime( filename, dt, verbose = 0 ):
+  """ set date 
+  """
+  val2 = dt.strftime( "%Y:%m:%d %H:%M:%S" )
+  tag_value_dict = { tag: val2 for tag in get_datetime_tags() }
+  if verbose > 1:
+    print( "  setting all dates: %s" % ( val2 ) )
+  exiftool_set( filename, tag_value_dict )
+
+
+
+def set_datetime_offset( filename, delta, verbose = 0 ):
+  """ set date offset 
+  """
+  tag_value_dict = get_datetime( filename )
+  tag_value_dict2 = {}
+  for key, val in tag_value_dict.items():
+    val2 = val + delta
+    tag_value_dict2.update( { key: val2.strftime( "%Y:%m:%d %H:%M:%S" ) } )
+    if verbose > 1:
+      print( "  setting %s: %s to %s" % ( key, val, val2 ) )
+  exiftool_set( filename, tag_value_dict2 )
 
 
 
@@ -37,7 +77,7 @@ def translate( exif, keymap ):
 
 
 def get_metadata( filename, koi, verbose = 0 ):
-  exif = get_video_metadata( filename, verbose = verbose )
+  exif = exiftool( filename, verbose = verbose )
   keymap = {"Camera Model Name": "Model"}
   exif2 = translate( exif, keymap )
   exif3 = { k:v for k,v in exif2.items() if k in koi }
@@ -105,7 +145,7 @@ def process_folder( root_folder, select = [], move = False, move_complement = Fa
           db[key] = { "exif": exif, "files": list() }
         db[key]["files"].append( filename )
       else:
-        if verbose > 1:
+        if verbose > 0:
           print( "Ignoring %s" % filename )
   empty = json.dumps( {} )
   ignored = 0 if empty not in db.keys() else len( db[empty]["files"] )
