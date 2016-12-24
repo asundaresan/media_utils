@@ -1,11 +1,11 @@
 Media utilities for Python
 ==========================
-This package has utilities for listing the metadata of image and video data. 
+This package has utilities for manipulating media files based on the metadata. 
 
 Install the package
 ------------------- 
 
-Note that the package relies on the ``exif_tool`` program. To install on Mac OS X::
+The package is based on the ``exiftool`` program. To install on Mac OS X::
 
   sudo port install p5-image-exiftool
 
@@ -48,14 +48,18 @@ To move the complement of the selected files to the sub-folder named "complement
   
 Modify date time metadata in files 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-At this moment, this needs GExiv2 and works only in Ubuntu Linux.::
 
-  sudo apt-get install gir1.2-gexiv2-0.10
+To check the date-time of files, simply run:: 
 
-You can check to see the date-time, increment or decrement date-time metadata in the image files::
+  python bin/set_datetime.py <files>
 
-  python bin/set_time.py <files>
-  python bin/set_time.py -i 365d <files>
-  python bin/set_time.py -d 15h <files>
+To increment or decrement the various date-time tags in the file, use the -i or -d option respectively. The amount to be incremented or decremented is provided as a comma separated value and suffixed by d, h, m or s for day, hour, minute and second respectively.::
 
+  python bin/set_datetime.py -i 365d,3h <files>
+  python bin/set_datetime.py -d 15h,30m,0s <files>
+
+To set the date-time to an absolute value, provide the date-time in the standard format for the datetime module.::
+
+  python bin/set_datetime.py -s "2013-05-29 15:30:42" <files>
+  
   
