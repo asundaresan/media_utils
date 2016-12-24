@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='media_utils',
-      version='0.1.0',
+      version='0.2.0',
       description='Python media utilities such as metadata',
       url='http://github.com/asundaresan/media_utils',
       author='Aravind Sundaresan',
