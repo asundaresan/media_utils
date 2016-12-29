@@ -6,11 +6,17 @@ import subprocess
 def exiftool( filename, options = [], verbose = 0 ):
   """ Call exiftool and parse the output to return a dict
   """
+  exif = {}
   cmd = ["exiftool", filename] + options
-  output = str( subprocess.check_output( cmd ).decode( "ascii" ) )
+  try:
+    output_raw = subprocess.check_output( cmd )
+  except:
+    print( "exiftool failed on %s" % filename )
+    return exif
+  output = str( output_raw.decode( "ascii" ) )
+
   if verbose > 1:
     print( "cmd: %s" % cmd )
-  exif = {}
   for line in output.splitlines():
     data = line.split( ":" )
     if len( data ) > 1:
