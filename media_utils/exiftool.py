@@ -43,7 +43,7 @@ def exiftool_set( filename, tagvalues = {}, verbose = 0 ):
       The tags here are exiftool option tags (createdate, etc) and not the same as in exif.keys()
   """
   options = list( "-%s=%s" % ( tag, val ) for ( tag, val ) in tagvalues.items() )
-  exif = exiftool( filename, options )
+  exif = exiftool( filename, options, verbose = verbose )
   return exif
 
 

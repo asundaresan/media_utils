@@ -40,7 +40,7 @@ def to_timedelta( value ):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument( "images", nargs = "+", help="Get and set datetime for images" )
-  parser.add_argument( "--verbose", "-v", action="count", help="Verbosity level" )
+  parser.add_argument( "--verbose", "-v", action="count", default = 0, help="Verbosity level" )
   parser.add_argument( "--increment", "-i", type = str, default = "",
     help="Increment timestamp as a CSV (E.g. 5d,7h is 5 days and 7 hours)" )
   parser.add_argument( "--decrement", "-d", type = str, default = "",
@@ -48,6 +48,8 @@ if __name__ == "__main__":
   parser.add_argument( "--datetime", "-s", type = str, default = "",
       help="Set timestamp e.g. \"2014-06-03 8:21:32\"" )
   args = parser.parse_args()
+
+  print( "verbose = %d" % args.verbose )
 
   if args.increment != "" or args.decrement != "":
     try: 

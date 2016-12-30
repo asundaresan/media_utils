@@ -10,7 +10,7 @@ from .exiftool import exiftool, exiftool_set, exiftool_get
 
 
 def get_datetime_tags( ):
-  return [ "createdate", "modifydate", "trackcreatedate", "trackmodifydate", "mediacreatedate", "mediamodifydate" ]
+  return [ "createdate", "modifydate", "trackcreatedate", "trackmodifydate", "mediacreatedate", "mediamodifydate", "datetimeoriginal" ]
 
 
 
@@ -48,9 +48,9 @@ def set_datetime( filename, dt, verbose = 0 ):
   """
   val2 = dt.strftime( "%Y:%m:%d %H:%M:%S" )
   tag_value_dict = { tag: val2 for tag in get_datetime_tags() }
-  if verbose > 1:
+  if verbose > 0:
     print( "  setting all dates: %s" % ( val2 ) )
-  exiftool_set( filename, tag_value_dict )
+  exiftool_set( filename, tag_value_dict, verbose = verbose )
 
 
 
