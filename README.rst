@@ -34,7 +34,7 @@ To list the different sources of the files::
 The list of "selected" media types is a sample set of phones which is used if none is specified. 
 To use your own list of media types use the following (a list is available in ``data``)::
 
-  python bin/get_metadata.py <folder> -i data/iphone6.yaml
+  python bin/get_metadata.py <folder> -s data/iphone6.yaml
 
 To move the selected files based on their source::
 

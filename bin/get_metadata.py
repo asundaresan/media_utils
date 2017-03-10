@@ -11,7 +11,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument( "folder", help="Search folder" )
     parser.add_argument( "--verbose", "-v", action="count", default = 0, help="Verbosity level" )
-    parser.add_argument( "--source", "-s", default = "", help="Data file containing" )
+    parser.add_argument( "--source", "-s", default = "", help="Data file containing metadata to filter" )
     parser.add_argument( "--move", "-m", action="store_true", help="Move selected files to folder" )
     parser.add_argument( "--move-complement", "-c", action="store_true", help="Move complement of selected files to folder" )
     args = parser.parse_args()
